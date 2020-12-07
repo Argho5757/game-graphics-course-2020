@@ -18,109 +18,8 @@ import {mat4, vec3, vec4} from "../node_modules/gl-matrix/esm/index.js";
 // **                       Data                       **
 // ******************************************************
 
-const positions = new Float32Array([
-    // front
-    -0.5, 0.5, 0.5,
-    0.5, 0.5, 0.5,
-    0.5, -0.5, 0.5,
-    -0.5, -0.5, 0.5,
 
-    // back
-    -0.5, 0.5, -0.5,
-    0.5, 0.5, -0.5,
-    0.5, -0.5, -0.5,
-    -0.5, -0.5, -0.5,
-
-    //top
-    -0.5, 0.5, 0.5,
-    0.5, 0.5, 0.5,
-    0.5, 0.5, -0.5,
-    -0.5, 0.5, -0.5,
-
-    //bottom
-    -0.5, -0.5, 0.5,
-    0.5, -0.5, 0.5,
-    0.5, -0.5, -0.5,
-    -0.5, -0.5, -0.5,
-
-    //left
-    -0.5, -0.5, 0.5,
-    -0.5, 0.5, 0.5,
-    -0.5, 0.5, -0.5,
-    -0.5, -0.5, -0.5,
-
-    //right
-    0.5, -0.5, 0.5,
-    0.5, 0.5, 0.5,
-    0.5, 0.5, -0.5,
-    0.5, -0.5, -0.5,
-]);
-
-const normals = new Float32Array([
-    // front
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-
-    // back
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-
-    //top
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-
-    //bottom
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-
-    //left
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-
-    //right
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-]);
-
-const indices = new Uint16Array([
-    // front
-    2, 1, 0,
-    0, 3, 2,
-
-    // back
-    4, 5, 6,
-    6, 7, 4,
-
-    // top
-    8, 9, 10,
-    10, 11, 8,
-
-    // bottom
-    14, 13, 12,
-    12, 15, 14,
-
-    // left
-    16, 17, 18,
-    18, 19, 16,
-
-    // right
-    22, 21, 20,
-    20, 23, 22,
-]);
-
-// import {positions, normals, indices} from "../blender/torus.js"
+import {positions, normals, indices} from "../blender/key.js"
 
 
 // ******************************************************
@@ -138,7 +37,7 @@ let fragmentShader = `
     
     void main()
     {
-        outColor = color;
+        outColor = vec4(0.5, 0.0, 0.0, 1.0);
     }
 `;
 
@@ -175,8 +74,8 @@ let vertexShader = `
 // **             Application processing               **
 // ******************************************************
 
-let bgColor = vec4.fromValues(189,0,0, 0);
-let fgColor = vec4.fromValues(255,180,0, 1.0);
+let bgColor = vec4.fromValues(189,99,0, 0);
+let fgColor = vec4.fromValues(255,180,88, 1.0);
 
 
 app.clearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3])
@@ -214,11 +113,11 @@ function draw() {
     let time = new Date().getTime() / 70 - startTime;
 
     mat4.perspective(projMatrix, Math.PI / 6, app.width / app.height, 2, 7.0);
-    mat4.lookAt(viewMatrix, vec3.fromValues(3, 0, 2), vec3.fromValues(0, 0, 0.8), vec3.fromValues(0, 2, 0));
+    mat4.lookAt(viewMatrix, vec3.fromValues(3, 3, 3), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 2, 0));
     mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
 
-    mat4.fromXRotation(rotateXMatrix, time * 0.3136);
-    mat4.fromYRotation(rotateYMatrix, time * 0.2235);
+    mat4.fromXRotation(rotateXMatrix, time * 0.122);
+    mat4.fromYRotation(rotateYMatrix, time * 0);
     mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
 
     mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);

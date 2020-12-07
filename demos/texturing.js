@@ -13,18 +13,19 @@
 import PicoGL from "../node_modules/picogl/build/module/picogl.js";
 import {mat4, vec3} from "../node_modules/gl-matrix/esm/index.js";
 
-import {positions, normals, uvs, indices} from "../blender/cube.js"
+import {positions, normals, uvs, indices} from "../blender/silinder.js"
+
 
 const skyboxPositions = new Float32Array([
-    -1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    -1.0, -1.0, 1.0,
-    1.0, -1.0, 1.0
+    -1.0, 2.0, 1.0,
+    2.0, 2.0, 1.0,
+    -2.0, -10.0, 1.0,
+    3.0, -3.0, 1.0
 ]);
 
 const skyboxIndices = new Uint16Array([
     0, 2, 1,
-    2, 3, 1
+    3, 4, 5
 ]);
 
 
@@ -59,7 +60,7 @@ let vertexShader = `
     
     void main()
     {
-        gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);           
+        gl_Position = modelViewProjectionMatrix * vec4(position, 2.5);           
         v_uv = uv;
     }
 `;
@@ -125,38 +126,39 @@ async function loadTexture(fileName) {
 }
 
 (async () => {
-    const tex = await loadTexture("abstract.jpg");
+    const tex = await loadTexture("face.jpg");
     let drawCall = app.createDrawCall(program, vertexArray)
         .texture("tex", app.createTexture2D(tex, tex.width, tex.height, {
-            magFilter: PicoGL.LINEAR,
-            minFilter: PicoGL.LINEAR_MIPMAP_LINEAR,
+            magFilter: PicoGL.NEAREST,
+            minFilter: PicoGL.NEAREST_MIPMAP_NEAREST,
             maxAnisotropy: 10,
-            wrapS: PicoGL.REPEAT,
-            wrapT: PicoGL.REPEAT
+            wrapS: PicoGL.MIRRORED_REPEAT,
+            wrapT: PicoGL.MIRRORED_REPEAT
         }));
+               
 
     let skyboxDrawCall = app.createDrawCall(skyboxProgram, skyboxArray)
         .texture("cubemap", app.createCubemap({
-            negX: await loadTexture("stormydays_bk.png"),
-            posX: await loadTexture("stormydays_ft.png"),
-            negY: await loadTexture("stormydays_dn.png"),
-            posY: await loadTexture("stormydays_up.png"),
-            negZ: await loadTexture("stormydays_lf.png"),
-            posZ: await loadTexture("stormydays_rt.png")
+            negX: await loadTexture("WM_IndoorWood-44_1024.png"),
+            posX: await loadTexture("WM_IndoorWood-44_1024.png"),
+            negY: await loadTexture("WM_IndoorWood-44_1024.png"),
+            posY: await loadTexture("WM_IndoorWood-44_1024.png"),
+            negZ: await loadTexture("WM_IndoorWood-44_1024.png"),
+            posZ: await loadTexture("WM_IndoorWood-44_1024.png")
         }));
 
-    let startTime = new Date().getTime() / 1000;
+    let startTime = new Date().getTime() / 1100;
 
 
     function draw() {
         let time = new Date().getTime() / 1000 - startTime;
 
-        mat4.perspective(projMatrix, Math.PI / 2, app.width / app.height, 0.1, 100.0);
-        let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(0, 0.5, 2), vec3.fromValues(0, 0, 0), time * 0.05);
-        mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+        mat4.perspective(projMatrix, Math.PI / 2, app.width / app.height, 1.1, 300.0);
+        let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(0, 1.5, 2.1), vec3.fromValues(0, 0, 0), time * 0.25);
+        mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, 0, 2), vec3.fromValues(0, 2, 0));
         mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
 
-        mat4.fromXRotation(rotateXMatrix, time * 0.1136);
+        mat4.fromXRotation(rotateXMatrix, time * 0.2136);
         mat4.fromZRotation(rotateYMatrix, time * 0.2235);
         mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
 
@@ -182,3 +184,5 @@ async function loadTexture(fileName) {
 
     requestAnimationFrame(draw);
 })();
+glGenTextures(15, tex); 
+
